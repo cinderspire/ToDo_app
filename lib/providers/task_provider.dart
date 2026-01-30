@@ -11,20 +11,47 @@ final searchQueryProvider = StateProvider<String>((ref) => '');
 /// Toggle for smart sort mode (urgency-based sorting).
 final smartSortProvider = StateProvider<bool>((ref) => false);
 
+/// Filter: selected category (null = all)
+final categoryFilterProvider = StateProvider<TaskCategory?>((ref) => null);
+
+/// Filter: selected priority (null = all)
+final priorityFilterProvider = StateProvider<Priority?>((ref) => null);
+
+/// Filter: show completed tasks toggle
+final showCompletedFilterProvider = StateProvider<bool>((ref) => false);
+
 final filteredTasksProvider = Provider<List<Task>>((ref) {
   final tasks = ref.watch(taskProvider);
   final query = ref.watch(searchQueryProvider).toLowerCase();
   final smartSort = ref.watch(smartSortProvider);
+  final categoryFilter = ref.watch(categoryFilterProvider);
+  final priorityFilter = ref.watch(priorityFilterProvider);
+  final showCompleted = ref.watch(showCompletedFilterProvider);
 
-  List<Task> result;
-  if (query.isEmpty) {
-    result = List.of(tasks);
-  } else {
-    result = tasks.where((task) {
+  List<Task> result = List.of(tasks);
+
+  // Text search
+  if (query.isNotEmpty) {
+    result = result.where((task) {
       return task.title.toLowerCase().contains(query) ||
           task.description.toLowerCase().contains(query) ||
           task.categoryText.toLowerCase().contains(query);
     }).toList();
+  }
+
+  // Category filter
+  if (categoryFilter != null) {
+    result = result.where((task) => task.category == categoryFilter).toList();
+  }
+
+  // Priority filter
+  if (priorityFilter != null) {
+    result = result.where((task) => task.priority == priorityFilter).toList();
+  }
+
+  // Show completed toggle - when off, hide completed
+  if (!showCompleted) {
+    result = result.where((task) => !task.isCompleted).toList();
   }
 
   if (smartSort) {
@@ -46,8 +73,13 @@ final todayTasksProvider = Provider<List<Task>>((ref) {
   return tasks.where((task) {
     if (task.isCompleted) return false;
     if (task.dueDate == null) return true;
-    return task.isDueToday || task.isOverdue;
+    return task.isDueToday;
   }).toList();
+});
+
+final overdueTasksProvider = Provider<List<Task>>((ref) {
+  final tasks = ref.watch(filteredTasksProvider);
+  return tasks.where((task) => !task.isCompleted && task.isOverdue).toList();
 });
 
 final upcomingTasksProvider = Provider<List<Task>>((ref) {
@@ -56,7 +88,7 @@ final upcomingTasksProvider = Provider<List<Task>>((ref) {
 });
 
 final completedTasksProvider = Provider<List<Task>>((ref) {
-  final tasks = ref.watch(filteredTasksProvider);
+  final tasks = ref.watch(taskProvider);
   return tasks.where((task) => task.isCompleted).toList();
 });
 
@@ -139,6 +171,10 @@ class TaskNotifier extends StateNotifier<List<Task>> {
   void clearCompleted() {
     state = state.where((task) => !task.isCompleted).toList();
     _saveTasks();
+  }
+
+  Future<void> refresh() async {
+    await _loadTasks();
   }
 
   // --- Subtask management ---

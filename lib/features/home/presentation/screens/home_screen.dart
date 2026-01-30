@@ -44,6 +44,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     final todayTasks = ref.watch(todayTasksProvider);
+    final overdueTasks = ref.watch(overdueTasksProvider);
     final upcomingTasks = ref.watch(upcomingTasksProvider);
     final completedTasks = ref.watch(completedTasksProvider);
     final allTasks = ref.watch(taskProvider);
@@ -54,7 +55,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         child: Column(
           children: [
             _buildHeader(),
-            if (_isSearching) _buildSearchBar(),
+            if (_isSearching) ...[
+              _buildSearchBar(),
+              const SizedBox(height: 8),
+              _buildFilterChips(),
+            ],
             _buildDailyPlanSection(),
             _buildStats(allTasks),
             _buildSmartSortToggle(smartSort),
@@ -63,9 +68,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildGroupedTaskList(todayTasks, upcomingTasks),
+                  _buildGroupedTaskList(overdueTasks, todayTasks, upcomingTasks),
                   _buildTaskList(upcomingTasks, 'Upcoming'),
-                  _buildTaskList(completedTasks, 'Completed'),
+                  _buildTaskList(completedTasks, 'Completed', showCompleted: true),
                 ],
               ),
             ),
@@ -84,7 +89,154 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  // ─── Daily Planning View ─────────────────────────────────────────────
+  // --- Filter Chips ---
+  Widget _buildFilterChips() {
+    final categoryFilter = ref.watch(categoryFilterProvider);
+    final priorityFilter = ref.watch(priorityFilterProvider);
+    final showCompleted = ref.watch(showCompletedFilterProvider);
+
+    return SizedBox(
+      height: 42,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          // Show Completed toggle
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilterChip(
+              label: const Text('Completed'),
+              selected: showCompleted,
+              onSelected: (val) {
+                HapticFeedback.selectionClick();
+                ref.read(showCompletedFilterProvider.notifier).state = val;
+              },
+              avatar: Icon(
+                showCompleted ? Icons.check_circle_rounded : Icons.circle_outlined,
+                size: 18,
+                color: showCompleted ? AppColors.success : AppColors.textTertiary,
+              ),
+              selectedColor: AppColors.successLight,
+              checkmarkColor: AppColors.success,
+              labelStyle: AppTextStyles.labelSmall.copyWith(
+                color: showCompleted ? AppColors.success : AppColors.textSecondary,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: showCompleted ? AppColors.success : AppColors.border,
+                ),
+              ),
+            ),
+          ),
+          // Category filters
+          ...TaskCategory.values.map((cat) {
+            final isSelected = categoryFilter == cat;
+            final color = _getCategoryFilterColor(cat);
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: FilterChip(
+                label: Text(_getCategoryFilterText(cat)),
+                selected: isSelected,
+                onSelected: (val) {
+                  HapticFeedback.selectionClick();
+                  ref.read(categoryFilterProvider.notifier).state = val ? cat : null;
+                },
+                selectedColor: color.withOpacity(0.15),
+                checkmarkColor: color,
+                labelStyle: AppTextStyles.labelSmall.copyWith(
+                  color: isSelected ? color : AppColors.textSecondary,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(color: isSelected ? color : AppColors.border),
+                ),
+              ),
+            );
+          }),
+          // Priority filters
+          ...Priority.values.map((p) {
+            final isSelected = priorityFilter == p;
+            final color = _getPriorityFilterColor(p);
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: FilterChip(
+                label: Text(_getPriorityFilterText(p)),
+                selected: isSelected,
+                onSelected: (val) {
+                  HapticFeedback.selectionClick();
+                  ref.read(priorityFilterProvider.notifier).state = val ? p : null;
+                },
+                selectedColor: color.withOpacity(0.15),
+                checkmarkColor: color,
+                labelStyle: AppTextStyles.labelSmall.copyWith(
+                  color: isSelected ? color : AppColors.textSecondary,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(color: isSelected ? color : AppColors.border),
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Color _getCategoryFilterColor(TaskCategory cat) {
+    switch (cat) {
+      case TaskCategory.work:
+        return AppColors.categoryWork;
+      case TaskCategory.personal:
+        return AppColors.categoryPersonal;
+      case TaskCategory.shopping:
+        return AppColors.categoryShopping;
+      case TaskCategory.health:
+        return AppColors.categoryHealth;
+      case TaskCategory.other:
+        return AppColors.categoryOther;
+    }
+  }
+
+  String _getCategoryFilterText(TaskCategory cat) {
+    switch (cat) {
+      case TaskCategory.work:
+        return 'Work';
+      case TaskCategory.personal:
+        return 'Personal';
+      case TaskCategory.shopping:
+        return 'Shopping';
+      case TaskCategory.health:
+        return 'Health';
+      case TaskCategory.other:
+        return 'Other';
+    }
+  }
+
+  Color _getPriorityFilterColor(Priority p) {
+    switch (p) {
+      case Priority.high:
+        return AppColors.priorityHigh;
+      case Priority.medium:
+        return AppColors.priorityMedium;
+      case Priority.low:
+        return AppColors.priorityLow;
+    }
+  }
+
+  String _getPriorityFilterText(Priority p) {
+    switch (p) {
+      case Priority.high:
+        return 'High';
+      case Priority.medium:
+        return 'Medium';
+      case Priority.low:
+        return 'Low';
+    }
+  }
+
+  // --- Daily Planning View ---
   Widget _buildDailyPlanSection() {
     final allTasks = ref.watch(taskProvider);
     // Tasks due today (or overdue), both completed and incomplete
@@ -183,7 +335,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  // ─── Smart Sort Toggle ───────────────────────────────────────────────
+  // --- Smart Sort Toggle ---
   Widget _buildSmartSortToggle(bool smartSort) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
@@ -260,6 +412,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     if (!_isSearching) {
                       _searchController.clear();
                       ref.read(searchQueryProvider.notifier).state = '';
+                      // Clear filters when closing search
+                      ref.read(categoryFilterProvider.notifier).state = null;
+                      ref.read(priorityFilterProvider.notifier).state = null;
+                      ref.read(showCompletedFilterProvider.notifier).state = false;
                     }
                   });
                 },
@@ -415,8 +571,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  // Group tasks by Today, Tomorrow, Later for the first tab
-  Widget _buildGroupedTaskList(List<Task> todayTasks, List<Task> upcomingTasks) {
+  // Group tasks by Overdue, Today, Tomorrow, Later for the first tab
+  Widget _buildGroupedTaskList(
+    List<Task> overdueTasks,
+    List<Task> todayTasks,
+    List<Task> upcomingTasks,
+  ) {
     // Separate upcoming into tomorrow and later
     final tomorrowTasks = <Task>[];
     final laterTasks = <Task>[];
@@ -430,44 +590,64 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     }
 
     // If all lists are empty, show empty state
-    if (todayTasks.isEmpty && tomorrowTasks.isEmpty && laterTasks.isEmpty) {
+    if (overdueTasks.isEmpty &&
+        todayTasks.isEmpty &&
+        tomorrowTasks.isEmpty &&
+        laterTasks.isEmpty) {
       return _buildEmptyState('Today');
     }
 
-    return ListView(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-      children: [
-        if (todayTasks.isNotEmpty) ...[
-          _buildSectionHeader('Today', todayTasks.length, AppColors.warning),
-          ...todayTasks.map((task) => TaskCard(
-                task: task,
-                onToggle: () => _toggleTask(task),
-                onDelete: () => _deleteTask(task),
-                onEdit: () => _navigateToDetail(task),
-              )),
+    return RefreshIndicator(
+      onRefresh: () async {
+        HapticFeedback.mediumImpact();
+        await ref.read(taskProvider.notifier).refresh();
+      },
+      color: AppColors.primary,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+        children: [
+          if (overdueTasks.isNotEmpty) ...[
+            _buildSectionHeader('Overdue', overdueTasks.length, AppColors.error),
+            ...overdueTasks.map((task) => TaskCard(
+                  task: task,
+                  onToggle: () => _toggleTask(task),
+                  onDelete: () => _deleteTask(task),
+                  onEdit: () => _navigateToDetail(task),
+                )),
+          ],
+          if (todayTasks.isNotEmpty) ...[
+            if (overdueTasks.isNotEmpty) const SizedBox(height: 8),
+            _buildSectionHeader('Today', todayTasks.length, AppColors.warning),
+            ...todayTasks.map((task) => TaskCard(
+                  task: task,
+                  onToggle: () => _toggleTask(task),
+                  onDelete: () => _deleteTask(task),
+                  onEdit: () => _navigateToDetail(task),
+                )),
+          ],
+          if (tomorrowTasks.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _buildSectionHeader('Tomorrow', tomorrowTasks.length, AppColors.info),
+            ...tomorrowTasks.map((task) => TaskCard(
+                  task: task,
+                  onToggle: () => _toggleTask(task),
+                  onDelete: () => _deleteTask(task),
+                  onEdit: () => _navigateToDetail(task),
+                )),
+          ],
+          if (laterTasks.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _buildSectionHeader('Later', laterTasks.length, AppColors.textTertiary),
+            ...laterTasks.map((task) => TaskCard(
+                  task: task,
+                  onToggle: () => _toggleTask(task),
+                  onDelete: () => _deleteTask(task),
+                  onEdit: () => _navigateToDetail(task),
+                )),
+          ],
         ],
-        if (tomorrowTasks.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _buildSectionHeader('Tomorrow', tomorrowTasks.length, AppColors.info),
-          ...tomorrowTasks.map((task) => TaskCard(
-                task: task,
-                onToggle: () => _toggleTask(task),
-                onDelete: () => _deleteTask(task),
-                onEdit: () => _navigateToDetail(task),
-              )),
-        ],
-        if (laterTasks.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _buildSectionHeader('Later', laterTasks.length, AppColors.textTertiary),
-          ...laterTasks.map((task) => TaskCard(
-                task: task,
-                onToggle: () => _toggleTask(task),
-                onDelete: () => _deleteTask(task),
-                onEdit: () => _navigateToDetail(task),
-              )),
-        ],
-      ],
+      ),
     );
   }
 
@@ -509,24 +689,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildTaskList(List<Task> tasks, String category) {
+  Widget _buildTaskList(List<Task> tasks, String category, {bool showCompleted = false}) {
     if (tasks.isEmpty) {
       return _buildEmptyState(category);
     }
 
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-      itemCount: tasks.length,
-      itemBuilder: (context, index) {
-        final task = tasks[index];
-        return TaskCard(
-          task: task,
-          onToggle: () => _toggleTask(task),
-          onDelete: () => _deleteTask(task),
-          onEdit: () => _navigateToDetail(task),
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        HapticFeedback.mediumImpact();
+        await ref.read(taskProvider.notifier).refresh();
       },
+      color: AppColors.primary,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          final task = tasks[index];
+          return TaskCard(
+            task: task,
+            onToggle: () => _toggleTask(task),
+            onDelete: () => _deleteTask(task),
+            onEdit: () => _navigateToDetail(task),
+          );
+        },
+      ),
     );
   }
 
@@ -647,7 +834,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-  // ─── Task Completion Celebration ─────────────────────────────────────
+  // --- Task Completion Celebration ---
   void _showCelebration() {
     _celebrationOverlay?.remove();
 
@@ -818,10 +1005,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 // Celebration overlay with confetti animation + motivational message
-// ═══════════════════════════════════════════════════════════════════════════
-
 class _CelebrationOverlay extends StatefulWidget {
   final VoidCallback onComplete;
   const _CelebrationOverlay({required this.onComplete});

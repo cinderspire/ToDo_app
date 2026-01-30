@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../home/presentation/screens/home_screen.dart';
+import '../../../../main.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -52,7 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     await prefs.setBool('onboarding_complete', true);
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const HomeScreen()),
+      MaterialPageRoute<void>(builder: (_) => const MainNavigation()),
     );
   }
 

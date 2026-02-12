@@ -279,7 +279,7 @@ class PaywallScreen extends ConsumerWidget {
               );
             },
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.primary),
+              side: const BorderSide(color: AppColors.primary),
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),

@@ -77,14 +77,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddTask,
         backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add_rounded, color: Colors.white),
-        label: Text(
-          'Add Task',
-          style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
-        ),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
       ),
     );
   }

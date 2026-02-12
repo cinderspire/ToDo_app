@@ -45,11 +45,9 @@ final isPremiumProvider = Provider<bool>((ref) {
 });
 
 class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
-  SubscriptionNotifier() : super(SubscriptionState(isPremium: kDebugMode)) {
+  SubscriptionNotifier() : super(const SubscriptionState()) {
     _init();
   }
-
-  bool _configured = false;
 
   Future<void> _init() async {
     try {
@@ -57,16 +55,15 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
           ? AppConstants.revenueCatApiKeyIOS
           : AppConstants.revenueCatApiKeyAndroid;
 
-      // Skip configure if using placeholder keys
-      if (apiKey.contains('REPLACE') || apiKey.contains('your_') || apiKey.isEmpty) {
-        debugPrint('[RevenueCat] Skipping — placeholder API key detected');
-        state = state.copyWith(isLoading: false);
+      // Skip configure if using placeholder keys — enable all features (demo mode)
+      if (apiKey.contains('REPLACE') || apiKey.contains('your_') || apiKey.contains('YOUR_') || apiKey.isEmpty) {
+        debugPrint('[RevenueCat] Skipping — placeholder API key detected (demo mode)');
+        state = state.copyWith(isLoading: false, isPremium: true);
         return;
       }
 
       final configuration = PurchasesConfiguration(apiKey);
       await Purchases.configure(configuration);
-      _configured = true;
 
       // Listen for customer info updates
       Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);

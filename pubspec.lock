@@ -665,7 +665,7 @@ packages:
     source: hosted
     version: "1.5.0"
   purchases_flutter:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: purchases_flutter
       sha256: "8d34712aa3201f675eeccaacf45c0b7b025575fc9d0378b2619bb61246e76064"

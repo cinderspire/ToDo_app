@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Primary Colors - Modern Blue/Cyan Theme
+  // Primary Colors - Blue/Cyan Theme (kept from A)
   static const Color primary = Color(0xFF0066FF);
   static const Color primaryLight = Color(0xFF4D94FF);
   static const Color primaryDark = Color(0xFF0052CC);
@@ -12,6 +12,13 @@ class AppColors {
   static const Color accent = Color(0xFF00D4FF);
   static const Color accentLight = Color(0xFF66E5FF);
   static const Color accentDark = Color(0xFF00A3CC);
+
+  // Layout Constants - Boxy/Modern Design
+  static const double cardRadius = 8.0;
+  static const double buttonRadius = 8.0;
+  static const double inputRadius = 8.0;
+  static const double chipRadius = 6.0;
+  static const double containerRadius = 8.0;
 
   // Background Colors
   static const Color background = Color(0xFFF8FAFC);

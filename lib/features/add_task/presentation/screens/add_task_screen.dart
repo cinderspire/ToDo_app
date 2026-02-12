@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/revenue_cat_service.dart';
 import '../../../../models/task_model.dart';
 import '../../../../providers/task_provider.dart';
+import '../../../paywall/screens/paywall_screen.dart';
 
 class AddTaskScreen extends ConsumerStatefulWidget {
   final Task? taskToEdit;
@@ -157,19 +160,19 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.error),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
             contentPadding: const EdgeInsets.all(16),
           ),
@@ -245,7 +248,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? color.withOpacity(0.15) : AppColors.surface,
+              color: isSelected ? color.withValues(alpha: 0.15) : AppColors.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected ? color : AppColors.border,
@@ -291,10 +294,10 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.calendar_today_rounded,
                 size: 20,
                 color: AppColors.primary,
@@ -340,7 +343,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.1),
+                color: AppColors.accent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -383,7 +386,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: Colors.white,
               surface: AppColors.surface,
@@ -446,7 +449,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: Colors.white,
               surface: AppColors.surface,
@@ -465,6 +468,19 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
 
   void _saveTask() {
     if (!_formKey.currentState!.validate()) return;
+
+    // Enforce free tier limit for new tasks
+    if (!isEditing) {
+      final isPremium = ref.read(isPremiumProvider);
+      final taskCount = ref.read(taskProvider).length;
+      if (!isPremium && taskCount >= AppConstants.freeTaskLimit) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PaywallScreen()),
+        );
+        return;
+      }
+    }
 
     HapticFeedback.mediumImpact();
 

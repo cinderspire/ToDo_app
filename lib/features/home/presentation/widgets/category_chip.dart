@@ -34,7 +34,7 @@ class CategoryChip extends StatelessWidget {
           color: isSelected ? color : AppColors.backgroundLightCard,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: isSelected ? color : AppColors.border),
-          boxShadow: isSelected ? [BoxShadow(color: color.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 2))] : null,
+          boxShadow: isSelected ? [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 2))] : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

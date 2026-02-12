@@ -142,7 +142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   HapticFeedback.selectionClick();
                   ref.read(categoryFilterProvider.notifier).state = val ? cat : null;
                 },
-                selectedColor: color.withOpacity(0.15),
+                selectedColor: color.withValues(alpha: 0.15),
                 checkmarkColor: color,
                 labelStyle: AppTextStyles.labelSmall.copyWith(
                   color: isSelected ? color : AppColors.textSecondary,
@@ -167,7 +167,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   HapticFeedback.selectionClick();
                   ref.read(priorityFilterProvider.notifier).state = val ? p : null;
                 },
-                selectedColor: color.withOpacity(0.15),
+                selectedColor: color.withValues(alpha: 0.15),
                 checkmarkColor: color,
                 labelStyle: AppTextStyles.labelSmall.copyWith(
                   color: isSelected ? color : AppColors.textSecondary,
@@ -264,7 +264,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -288,7 +288,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -311,7 +311,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 builder: (context, animValue, _) {
                   return LinearProgressIndicator(
                     value: animValue,
-                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
                     valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                     minHeight: 8,
                   );
@@ -326,7 +326,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ? 'Over halfway there - keep going!'
                       : 'Let\'s get started on today\'s tasks!',
               style: AppTextStyles.labelSmall.copyWith(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
               ),
             ),
           ],
@@ -355,7 +355,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             ),
           ),
           const SizedBox(width: 4),
-          Tooltip(
+          const Tooltip(
             message: 'Sort tasks by urgency (deadline + priority)',
             child: Icon(
               Icons.info_outline_rounded,
@@ -372,7 +372,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 HapticFeedback.lightImpact();
                 ref.read(smartSortProvider.notifier).state = value;
               },
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
             ),
           ),
         ],
@@ -510,12 +510,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.12), color.withOpacity(0.04)],
+          colors: [color.withValues(alpha: 0.12), color.withValues(alpha: 0.04)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -673,7 +673,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -762,15 +762,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.12),
-                      AppColors.accent.withOpacity(0.06),
+                      AppColors.primary.withValues(alpha: 0.12),
+                      AppColors.accent.withValues(alpha: 0.06),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 56, color: AppColors.primary.withOpacity(0.6)),
+                child: Icon(icon, size: 56, color: AppColors.primary.withValues(alpha: 0.6)),
               ),
             ),
             const SizedBox(height: 28),
@@ -1095,7 +1095,7 @@ class _CelebrationOverlayState extends State<_CelebrationOverlay>
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.success.withOpacity(0.4),
+                            color: AppColors.success.withValues(alpha: 0.4),
                             blurRadius: 20,
                             spreadRadius: 2,
                           ),
@@ -1146,7 +1146,7 @@ class _CelebrationOverlayState extends State<_CelebrationOverlay>
           width: particle.size,
           height: particle.size * particle.aspectRatio,
           decoration: BoxDecoration(
-            color: particle.color.withOpacity(1.0 - progress * 0.5),
+            color: particle.color.withValues(alpha: 1.0 - progress * 0.5),
             borderRadius: BorderRadius.circular(particle.isCircle ? 50 : 2),
           ),
         ),

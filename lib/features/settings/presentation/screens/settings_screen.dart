@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/services/revenue_cat_service.dart';
 import '../../../../providers/task_provider.dart';
 import '../../../../providers/theme_provider.dart';
+import '../../../paywall/screens/paywall_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -15,6 +17,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final isDark = themeMode == ThemeMode.dark;
     final completedTasks = ref.watch(completedTasksProvider);
+    final isPremium = ref.watch(isPremiumProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -27,6 +30,58 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          // Subscription Section
+          _buildSectionHeader('Subscription'),
+          const SizedBox(height: 12),
+          _buildSettingsCard(
+            context: context,
+            children: [
+              _buildActionTile(
+                icon: Icons.workspace_premium_rounded,
+                iconColor: isPremium ? AppColors.success : const Color(0xFFFFD700),
+                title: isPremium ? 'Sam Premium' : 'Upgrade to Premium',
+                subtitle: isPremium
+                    ? 'All features unlocked'
+                    : 'Unlimited tasks, habits & more',
+                onTap: () {
+                  if (!isPremium) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                    );
+                  }
+                },
+              ),
+              if (!isPremium) ...[
+                const Divider(height: 1),
+                _buildActionTile(
+                  icon: Icons.restore_rounded,
+                  iconColor: AppColors.info,
+                  title: 'Restore Purchases',
+                  subtitle: 'Already subscribed? Restore here',
+                  onTap: () async {
+                    final restored = await ref
+                        .read(subscriptionProvider.notifier)
+                        .restorePurchases();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(restored
+                              ? 'Purchases restored!'
+                              : 'No purchases to restore'),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 24),
+
           // Appearance Section
           _buildSectionHeader('Appearance'),
           const SizedBox(height: 12),
@@ -102,7 +157,7 @@ class SettingsScreen extends ConsumerWidget {
                 Icon(
                   Icons.check_circle_rounded,
                   size: 40,
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -167,7 +222,7 @@ class SettingsScreen extends ConsumerWidget {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
+          color: iconColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: iconColor, size: 22),
@@ -183,7 +238,7 @@ class SettingsScreen extends ConsumerWidget {
       trailing: Switch.adaptive(
         value: value,
         onChanged: onChanged,
-        activeColor: AppColors.primary,
+        activeThumbColor: AppColors.primary,
       ),
     );
   }
@@ -200,7 +255,7 @@ class SettingsScreen extends ConsumerWidget {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
+          color: iconColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: iconColor, size: 22),
@@ -213,7 +268,7 @@ class SettingsScreen extends ConsumerWidget {
         subtitle,
         style: AppTextStyles.bodySmall.copyWith(color: AppColors.textTertiary),
       ),
-      trailing: Icon(
+      trailing: const Icon(
         Icons.chevron_right_rounded,
         color: AppColors.textTertiary,
       ),
@@ -232,7 +287,7 @@ class SettingsScreen extends ConsumerWidget {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
+          color: iconColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: iconColor, size: 22),

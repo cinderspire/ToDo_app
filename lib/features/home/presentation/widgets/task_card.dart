@@ -155,14 +155,14 @@ class TaskCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: task.isCompleted
-                    ? AppColors.success.withOpacity(0.3)
+                    ? AppColors.success.withValues(alpha: 0.3)
                     : AppColors.border,
               ),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: AppColors.shadow,
                   blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -196,7 +196,7 @@ class TaskCard extends StatelessWidget {
                   height: 50,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [_priorityColor, _priorityColor.withOpacity(0.4)],
+                      colors: [_priorityColor, _priorityColor.withValues(alpha: 0.4)],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
@@ -252,7 +252,7 @@ class TaskCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: _categoryColor.withOpacity(0.1),
+                              color: _categoryColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -300,7 +300,7 @@ class TaskCard extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: _dueDateColor.withOpacity(0.1),
+                                color: _dueDateColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(

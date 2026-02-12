@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/theme/app_colors.dart';
 import 'features/home/presentation/screens/home_screen.dart';
+import 'features/habits/screens/habits_screen.dart';
 import 'features/settings/presentation/screens/settings_screen.dart';
 import 'features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'providers/theme_provider.dart';
@@ -18,26 +19,26 @@ void main() async {
   await Hive.openBox('tasks');
 
   final prefs = await SharedPreferences.getInstance();
-  final onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
+  final onboardingComplete = prefs.getBool('onboarding_complete') ?? true; // Demo mode: skip onboarding
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
   ));
 
-  runApp(ProviderScope(child: ToDoApp(showOnboarding: !onboardingComplete)));
+  runApp(ProviderScope(child: SamApp(showOnboarding: !onboardingComplete)));
 }
 
-class ToDoApp extends ConsumerWidget {
+class SamApp extends ConsumerWidget {
   final bool showOnboarding;
-  const ToDoApp({super.key, required this.showOnboarding});
+  const SamApp({super.key, required this.showOnboarding});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
-      title: 'TaskFlow',
+      title: 'Sam',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: _buildLightTheme(),
@@ -50,7 +51,7 @@ class ToDoApp extends ConsumerWidget {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: AppColors.surface,
@@ -75,7 +76,7 @@ class ToDoApp extends ConsumerWidget {
         color: AppColors.cardBackground,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppColors.cardRadius),
           side: const BorderSide(color: AppColors.border, width: 1),
         ),
       ),
@@ -89,15 +90,15 @@ class ToDoApp extends ConsumerWidget {
         filled: true,
         fillColor: AppColors.surfaceVariant,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -109,7 +110,7 @@ class ToDoApp extends ConsumerWidget {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
@@ -135,7 +136,7 @@ class ToDoApp extends ConsumerWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppColors.chipRadius),
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -156,7 +157,7 @@ class ToDoApp extends ConsumerWidget {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primary.withOpacity(0.12),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.all(
           GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
         ),
@@ -171,12 +172,11 @@ class ToDoApp extends ConsumerWidget {
     const darkBorder = Color(0xFF475569);
     const darkTextPrimary = Color(0xFFF1F5F9);
     const darkTextSecondary = Color(0xFF94A3B8);
-    // darkTextTertiary available: Color(0xFF64748B)
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: darkSurface,
@@ -201,7 +201,7 @@ class ToDoApp extends ConsumerWidget {
         color: darkSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppColors.cardRadius),
           side: const BorderSide(color: darkBorder, width: 1),
         ),
       ),
@@ -215,15 +215,15 @@ class ToDoApp extends ConsumerWidget {
         filled: true,
         fillColor: darkSurfaceVariant,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           borderSide: const BorderSide(color: darkBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -235,7 +235,7 @@ class ToDoApp extends ConsumerWidget {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppColors.buttonRadius),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
@@ -261,7 +261,7 @@ class ToDoApp extends ConsumerWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppColors.chipRadius),
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -282,7 +282,7 @@ class ToDoApp extends ConsumerWidget {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: darkSurface,
-        indicatorColor: AppColors.primary.withOpacity(0.2),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.2),
         labelTextStyle: WidgetStateProperty.all(
           GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
         ),
@@ -303,6 +303,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final _screens = const [
     HomeScreen(),
+    HabitsScreen(),
     SettingsScreen(),
   ];
 
@@ -323,6 +324,11 @@ class _MainNavigationState extends State<MainNavigation> {
             icon: Icon(Icons.checklist_rounded),
             selectedIcon: Icon(Icons.checklist_rounded),
             label: 'Tasks',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.loop_outlined),
+            selectedIcon: Icon(Icons.loop_rounded),
+            label: 'Habits',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),

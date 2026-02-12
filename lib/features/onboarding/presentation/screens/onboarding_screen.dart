@@ -18,21 +18,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final List<_OnboardingPage> _pages = const [
     _OnboardingPage(
       icon: Icons.checklist_rounded,
-      title: 'Organize Tasks',
+      title: 'Smart Task Management',
       subtitle:
-          'Effortlessly capture and organize all your tasks in one place. Never forget what needs to be done.',
+          'Capture and organize tasks with smart priorities, categories, and urgency scoring. Sam keeps you focused.',
     ),
     _OnboardingPage(
-      icon: Icons.flag_rounded,
-      title: 'Smart Priorities',
+      icon: Icons.loop_rounded,
+      title: 'Build Better Habits',
       subtitle:
-          'Set priorities and categories to focus on what matters most. Work smarter, not harder.',
+          'Track daily habits with streaks and progress rings. Build productive routines that stick.',
     ),
     _OnboardingPage(
-      icon: Icons.insights_rounded,
-      title: 'Track Progress',
+      icon: Icons.auto_awesome_rounded,
+      title: 'Powered by You',
       subtitle:
-          'Watch your productivity soar as you complete tasks and build momentum every day.',
+          'All intelligence runs on-device. No cloud, no tracking. Your productivity, your privacy.',
     ),
   ];
 
@@ -76,7 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 padding: const EdgeInsets.all(16),
                 child: TextButton(
                   onPressed: _completeOnboarding,
-                  child: Text(
+                  child: const Text(
                     'Skip',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -169,8 +169,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.15),
-                  AppColors.accent.withOpacity(0.15),
+                  AppColors.primary.withValues(alpha: 0.15),
+                  AppColors.accent.withValues(alpha: 0.15),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,

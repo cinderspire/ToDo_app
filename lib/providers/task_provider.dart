@@ -111,8 +111,97 @@ class TaskNotifier extends StateNotifier<List<Task>> {
   Future<void> _loadTasks() async {
     _taskBox = Hive.box('tasks');
     final tasksData = _taskBox.get('tasks', defaultValue: <dynamic>[]) as List;
-    state = tasksData.map((e) => Task.fromMap(Map<String, dynamic>.from(e))).toList();
+    if (tasksData.isEmpty) {
+      // Seed demo tasks on first launch
+      state = _seedDemoTasks();
+      await _saveTasks();
+    } else {
+      state = tasksData.map((e) => Task.fromMap(Map<String, dynamic>.from(e))).toList();
+    }
     _sortTasks();
+  }
+
+  List<Task> _seedDemoTasks() {
+    final now = DateTime.now();
+    return [
+      Task(
+        id: 'demo-1',
+        title: 'Complete project proposal',
+        description: 'Draft and finalize the Q1 project proposal for the team review meeting.',
+        category: TaskCategory.work,
+        priority: Priority.high,
+        dueDate: now,
+        subtasks: [
+          SubTask(id: 's1', title: 'Research competitors', isCompleted: true),
+          SubTask(id: 's2', title: 'Write executive summary', isCompleted: true),
+          SubTask(id: 's3', title: 'Create timeline', isCompleted: false),
+        ],
+      ),
+      Task(
+        id: 'demo-2',
+        title: 'Grocery shopping',
+        description: 'Weekly groceries — fruits, vegetables, protein.',
+        category: TaskCategory.shopping,
+        priority: Priority.medium,
+        dueDate: now,
+        subtasks: [
+          SubTask(id: 's4', title: 'Fruits & veggies', isCompleted: false),
+          SubTask(id: 's5', title: 'Chicken & fish', isCompleted: false),
+        ],
+      ),
+      Task(
+        id: 'demo-3',
+        title: 'Morning workout',
+        description: '30 min HIIT session + stretching.',
+        category: TaskCategory.health,
+        priority: Priority.high,
+        dueDate: now,
+        isCompleted: true,
+        // completedAt not in constructor
+      ),
+      Task(
+        id: 'demo-4',
+        title: 'Read 30 pages',
+        description: 'Continue reading "Atomic Habits" by James Clear.',
+        category: TaskCategory.personal,
+        priority: Priority.low,
+        dueDate: now,
+      ),
+      Task(
+        id: 'demo-5',
+        title: 'Team standup meeting',
+        description: 'Daily standup at 10:00 AM — discuss sprint progress.',
+        category: TaskCategory.work,
+        priority: Priority.high,
+        dueDate: now,
+        isCompleted: true,
+        // completedAt not in constructor
+      ),
+      Task(
+        id: 'demo-6',
+        title: 'Pay electricity bill',
+        description: 'Due by end of week.',
+        category: TaskCategory.personal,
+        priority: Priority.medium,
+        dueDate: now.add(const Duration(days: 2)),
+      ),
+      Task(
+        id: 'demo-7',
+        title: 'Design review presentation',
+        description: 'Prepare slides for the design review on Friday.',
+        category: TaskCategory.work,
+        priority: Priority.medium,
+        dueDate: now.add(const Duration(days: 3)),
+      ),
+      Task(
+        id: 'demo-8',
+        title: 'Book dentist appointment',
+        description: 'Schedule annual checkup.',
+        category: TaskCategory.health,
+        priority: Priority.low,
+        dueDate: now.add(const Duration(days: 5)),
+      ),
+    ];
   }
 
   Future<void> _saveTasks() async {

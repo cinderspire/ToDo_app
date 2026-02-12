@@ -16,7 +16,12 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   intl: ^0.18.1
-  shared_preferences: ^2.2.2
+  shared_preferences: 2.3.2
+
+dependency_overrides:
+  shared_preferences_foundation: 2.4.0
+  purchases_flutter: ^8.6.0
+  fl_chart: ^0.69.2
 
 dev_dependencies:
   flutter_test:

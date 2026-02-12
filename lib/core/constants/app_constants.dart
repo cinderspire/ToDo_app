@@ -1,9 +1,19 @@
-// App Constants for TaskFlow ToDo App
+// App Constants for Sam - Smart Productivity App
 class AppConstants {
   // App Info
-  static const String appName = 'TaskFlow';
+  static const String appName = 'Sam';
   static const String appVersion = '1.0.0';
-  static const String appTagline = 'Simple Task Management';
+  static const String appTagline = 'Smart Reminders & Productivity';
+
+  // RevenueCat
+  static const String revenueCatApiKeyIOS = 'appl_YOUR_IOS_API_KEY';
+  static const String revenueCatApiKeyAndroid = 'goog_YOUR_ANDROID_API_KEY';
+  static const String entitlementId = 'premium';
+  static const String offeringId = 'default';
+
+  // Free Tier Limits
+  static const int freeTaskLimit = 10;
+  static const int freeHabitLimit = 3;
 
   // Storage Keys
   static const String keyOnboardingComplete = 'onboarding_complete';

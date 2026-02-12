@@ -135,7 +135,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
               label: 'Category',
               value: currentTask.categoryText,
               color: _getCategoryColor(currentTask.category),
-              bgColor: _getCategoryColor(currentTask.category).withOpacity(0.1),
+              bgColor: _getCategoryColor(currentTask.category).withValues(alpha: 0.1),
             ),
             const SizedBox(height: 12),
 
@@ -149,7 +149,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   ? _getDueDateColor(currentTask)
                   : AppColors.textTertiary,
               bgColor: currentTask.dueDate != null
-                  ? _getDueDateColor(currentTask).withOpacity(0.1)
+                  ? _getDueDateColor(currentTask).withValues(alpha: 0.1)
                   : AppColors.surfaceVariant,
               subtitle: currentTask.dueDate != null
                   ? Helpers.getDueDateLabel(currentTask.dueDate)
@@ -164,7 +164,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 label: 'Due Time',
                 value: DateFormat('hh:mm a').format(currentTask.dueDate!),
                 color: AppColors.accent,
-                bgColor: AppColors.accent.withOpacity(0.1),
+                bgColor: AppColors.accent.withValues(alpha: 0.1),
               ),
               const SizedBox(height: 12),
             ],
@@ -211,9 +211,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.08),
+        color: badgeColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: badgeColor.withOpacity(0.2)),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -256,7 +256,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Row(
               children: [
-                Icon(Icons.checklist_rounded, size: 20, color: AppColors.primary),
+                const Icon(Icons.checklist_rounded, size: 20, color: AppColors.primary),
                 const SizedBox(width: 8),
                 Text(
                   'Subtasks',
@@ -270,7 +270,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                       color: (task.subtaskProgress == 1.0
                               ? AppColors.success
                               : AppColors.primary)
-                          .withOpacity(0.1),
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -399,7 +399,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           onTap: () {
             ref.read(taskProvider.notifier).deleteSubtask(task.id, subtask.id);
           },
-          child: Icon(
+          child: const Icon(
             Icons.close_rounded,
             size: 18,
             color: AppColors.textTertiary,
@@ -449,9 +449,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: bannerColor.withOpacity(0.1),
+        color: bannerColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: bannerColor.withOpacity(0.3)),
+        border: Border.all(color: bannerColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

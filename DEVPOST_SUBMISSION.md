@@ -2,7 +2,7 @@
 
 ## Project Title
 
-**TaskFlow — Boxy, Bold Task Management That Gets Things Done**
+**TaskFlow — Flow State as a Service.**
 
 ## Tagline
 
